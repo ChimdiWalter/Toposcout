@@ -1,0 +1,47 @@
+{
+  "pilot": true,
+  "pilot_label": "SATELLITE PORTABILITY PILOT \u2014 NOT FOR OPERATIONAL GIS USE",
+  "domain": "satellite",
+  "adapter": "satellite_road_unet_v1",
+  "model": "aerial-image-road-segmentation-with-U-NET-xp (Keras U-Net, Massachusetts Roads)",
+  "model_source": "https://huggingface.co/spectrewolf8/aerial-image-road-segmentation-with-U-NET-xp",
+  "license": "MIT (model); input tile: Massachusetts Roads test set (Mnih 2013)",
+  "input": "artifacts/pilots/satellite/input.tiff",
+  "mask": "artifacts/pilots/satellite/mask.png",
+  "overlay": "artifacts/pilots/satellite/overlay.jpg",
+  "runtime_seconds": 24.52,
+  "structural_audit": {
+    "profile": "satellite_roads",
+    "structure": "connected_network",
+    "beta_0": 26,
+    "foreground_pixels": 2296,
+    "foreground_fraction": 0.0010204444444444445,
+    "tiny_component_cutoff_px": 1125,
+    "tiny_components": 26,
+    "tiny_component_fraction": 1.0,
+    "largest_component_fraction": 0.20949477351916376,
+    "component_area_quartiles_px": [
+      14,
+      42,
+      120
+    ],
+    "beta_1": 0,
+    "skeleton_components": 24,
+    "skeleton_endpoints": 46,
+    "skeleton_pixels": 577,
+    "fragmentation_score": 1.0
+  },
+  "profile_primary_metrics": {
+    "beta_0": 26,
+    "fragmentation_score": 1.0,
+    "largest_component_fraction": 0.20949477351916376,
+    "skeleton_components": 24,
+    "skeleton_endpoints": 46,
+    "beta_1": 0
+  },
+  "decision": null,
+  "limitations": "Portability pilot only \u2014 not validated for operational GIS/road mapping. Fixed public checkpoint, frozen 0.5 threshold, no topology-aware training, no recovery rule.",
+  "generated_at": "2026-08-30T16:12:28-0500",
+  "public_imagery": true,
+  "imagery_note": "Model MIT; input tile: Massachusetts Roads test set (Mnih 2013, derived from MassGIS public-record aerial imagery)."
+}

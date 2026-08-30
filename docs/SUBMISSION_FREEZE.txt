@@ -1,0 +1,7 @@
+toposcout-ui: toposcout-ui-00003-h6x	us-central1-docker.pkg.dev/toposcout-agent/cloud-run-source-deploy/toposcout-ui:m6a
+toposcout-agent: toposcout-agent-00003-4j6	us-central1-docker.pkg.dev/toposcout-agent/cloud-run-source-deploy/toposcout-agent:m6
+toposcout-worker: toposcout-worker-00001-ksl	us-central1-docker.pkg.dev/toposcout-agent/cloud-run-source-deploy/toposcout-worker:m5
+--- image digests ---
+toposcout-ui:m6a @ sha256:a6ae42d858414187c41faca4a3e0deeac9d0b75c1cfb92635e50c0d606a96c8f
+toposcout-agent:m6 @ sha256:1bdb6b8bb6941f74b75ef4fcae8f08b559855a7efdb7d4d60ea6dcb403e6d1ae
+toposcout-worker:m5 @ sha256:c306a68f6883daab1a6f70d7626f7052457f5b620fa9e21fbf334b5e60d51c55

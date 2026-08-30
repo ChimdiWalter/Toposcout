@@ -1,0 +1,7 @@
+{
+  "model_type": "resnext50_32x4d",
+  "num_classes": 5,
+  "image_size": 416,
+  "num_encoders": 5,
+  "num_channels": 3
+}

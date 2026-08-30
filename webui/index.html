@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TopoScout</title>
+<style>
+  :root { --ink:#1a2733; --mut:#5d6f7f; --line:#dce3e9; --ok:#1c7c46; --warn:#b3610e;
+          --bad:#a52a2a; --accent:#0b5fa5; --bg:#f4f6f8; --card:#ffffff; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:15px/1.45 "Segoe UI", system-ui, sans-serif; }
+  header { background:var(--card); border-bottom:1px solid var(--line); padding:14px 22px;
+           display:flex; align-items:baseline; gap:14px; }
+  header h1 { margin:0; font-size:20px; letter-spacing:.4px; }
+  header span { color:var(--mut); font-size:13px; }
+  main { max-width:1060px; margin:20px auto; padding:0 16px; display:grid; gap:16px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:16px 18px; }
+  .card h2 { margin:0 0 10px; font-size:14px; text-transform:uppercase; letter-spacing:.8px; color:var(--mut); }
+  #uploader { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  #uploader input[type=file] { font-size:14px; }
+  button { background:var(--accent); color:#fff; border:0; border-radius:6px;
+           padding:9px 16px; font-size:14px; cursor:pointer; }
+  button:disabled { background:#9db8cc; cursor:default; }
+  #status-list { list-style:none; margin:0; padding:0; display:grid; gap:6px; }
+  #status-list li { display:flex; gap:10px; align-items:center; color:var(--mut); }
+  #status-list li .m { width:1.4em; text-align:center; font-weight:700; }
+  li.done { color:var(--ink); } li.done .m { color:var(--ok); }
+  li.active .m { color:var(--accent); animation:spin 1.2s linear infinite; display:inline-block; }
+  li.flag .m { color:var(--warn); }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .imgs { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; }
+  .imgs figure { margin:0; }
+  .imgs img { width:100%; border:1px solid var(--line); border-radius:6px; background:#eee; }
+  .imgs figcaption { font-size:12.5px; color:var(--mut); margin-top:4px; text-align:center; }
+  table { border-collapse:collapse; width:100%; font-size:14px; }
+  th, td { text-align:left; padding:5px 10px 5px 0; border-bottom:1px solid var(--line); }
+  th { color:var(--mut); font-weight:600; white-space:nowrap; }
+  td.num { font-family:Consolas, monospace; }
+  #action { font-size:20px; font-weight:700; padding:10px 14px; border-radius:6px; display:inline-block; }
+  #action.ACCEPT { color:var(--ok); background:#e8f5ec; }
+  #action.HUMAN_REVIEW { color:var(--warn); background:#fdf1e2; }
+  #action.REQUEST_REACQUISITION { color:var(--bad); background:#faeaea; }
+  #action-reason, #model-id { color:var(--mut); font-size:13px; margin-top:6px; }
+  #model-id { font-family:Consolas, monospace; word-break:break-all; }
+  a { color:var(--accent); }
+  .hidden { display:none; }
+  footer { color:var(--mut); font-size:12.5px; text-align:center; padding:14px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>TopoScout</h1>
+  <span>VALIDATED REFERENCE APPLICATION: maize phenotyping · deterministic evidence only</span>
+  <span style="margin-left:auto"><a href="/pilots" style="color:#0b5fa5">cross-domain portability pilots →</a></span>
+</header>
+<main>
+  <section class="card" id="upload-card">
+    <h2>Scientific image</h2>
+    <div id="uploader">
+      <input type="file" id="file" accept=".png,.jpg,.jpeg,.tif,.tiff">
+      <button id="go">Upload &amp; analyze</button>
+      <span id="run-label"></span>
+    </div>
+  </section>
+
+  <section class="card hidden" id="status-card">
+    <h2>Run status</h2>
+    <ul id="status-list">
+      <li data-step="qc"><span class="m">·</span> Image QC</li>
+      <li data-step="model"><span class="m">·</span> Real scientific model (T0 lesion segmentation)</li>
+      <li data-step="topology"><span class="m">·</span> Topology audit</li>
+      <li data-step="recovery"><span class="m">·</span> Structural recovery (500 px significance filter)</li>
+      <li data-step="final"><span class="m">·</span> Final decision</li>
+    </ul>
+  </section>
+
+  <section class="card hidden" id="images-card">
+    <h2>Imagery</h2>
+    <div class="imgs">
+      <figure><img id="img-orig" alt="original"><figcaption>Original</figcaption></figure>
+      <figure><img id="img-mask" alt="segmentation mask"><figcaption id="cap-mask">Segmentation</figcaption></figure>
+      <figure><img id="img-overlay" alt="overlay"><figcaption id="cap-overlay">Overlay</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="card hidden" id="evidence-card">
+    <h2>Scientific evidence <span style="text-transform:none">(exact deterministic tool outputs)</span></h2>
+    <table>
+      <thead><tr><th>Measurement</th><th>Attempt 1</th><th>Attempt 2</th></tr></thead>
+      <tbody id="ev-body"></tbody>
+    </table>
+    <div id="model-id"></div>
+  </section>
+
+  <section class="card hidden" id="action-card">
+    <h2>Agent action</h2>
+    <span id="action"></span>
+    <div id="action-reason"></div>
+    <div style="margin-top:8px"><a id="report-link" target="_blank">Evidence report (JSON)</a></div>
+  </section>
+</main>
+<footer>Measurements are deterministic tool outputs persisted per run; the language model never invents or reformats them.</footer>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+let runId = null, timer = null;
+
+const EV_ROWS = [
+  ["beta_0", "β₀ (connected components)", "topology"],
+  ["beta_1", "β₁ (holes)", "topology"],
+  ["foreground_pixels", "Foreground pixels", "topology"],
+  ["foreground_fraction", "Foreground fraction", "segmentation"],
+  ["tiny_components", "Tiny components", "topology"],
+  ["fragmentation_score", "Fragmentation score", "topology"],
+  ["largest_component_fraction", "Largest component fraction", "topology"],
+  ["min_area_px", "Significance threshold (px)", "segmentation"],
+  ["n_components_significant", "Significant components", "segmentation"],
+];
+
+$("go").addEventListener("click", async () => {
+  const f = $("file").files[0];
+  if (!f) { alert("Choose an image first."); return; }
+  $("go").disabled = true;
+  const fd = new FormData();
+  fd.append("image", f);
+  const r = await fetch("/api/runs", { method: "POST", body: fd });
+  if (!r.ok) { alert("Upload failed: " + (await r.text())); $("go").disabled = false; return; }
+  const body = await r.json();
+  runId = body.run_id;
+  $("run-label").textContent = "run " + runId;
+  $("status-card").classList.remove("hidden");
+  $("img-orig").src = `/api/runs/${runId}/artifact/input`;
+  $("images-card").classList.remove("hidden");
+  if (timer) clearInterval(timer);
+  timer = setInterval(poll, 2000);
+  poll();
+});
+
+function mark(step, cls, sym) {
+  const li = document.querySelector(`#status-list li[data-step=${step}]`);
+  li.className = cls;
+  li.querySelector(".m").textContent = sym;
+}
+
+// Display strings come from the SERVER (canonical json.dumps serialization of
+// the persisted evidence). The browser never reformats or rounds numbers.
+function dv(kindObj, key) {
+  if (!kindObj) return "—";
+  const d = kindObj.display || {};
+  if (key in d) return d[key];
+  const v = kindObj[key];
+  return (v === undefined || v === null) ? "—" : String(v);
+}
+
+async function poll() {
+  const r = await fetch(`/api/runs/${runId}`);
+  if (!r.ok) return;
+  const { run, evidence } = await r.json();
+  const st = run.state, a1 = evidence.attempt1 || {}, a2 = evidence.attempt2 || {};
+  const qc = evidence.qc;
+
+  mark("qc", qc ? "done" : (st === "QC" ? "active" : ""), qc ? "✓" : (st === "QC" ? "↻" : "·"));
+  const segDone = a1.segmentation, topoDone = a1.topology;
+  mark("model", segDone ? "done" : (st === "SEGMENTING" ? "active" : ""), segDone ? "✓" : (st === "SEGMENTING" ? "↻" : "·"));
+  mark("topology", topoDone ? "done" : (st === "TOPOLOGY_AUDIT" ? "active" : ""), topoDone ? "✓" : (st === "TOPOLOGY_AUDIT" ? "↻" : "·"));
+  const retried = a1.decision && a1.decision.action === "RETRY";
+  const recDone = a2.segmentation;
+  mark("recovery", recDone ? "done" : (st === "RETRYING" ? "active" : ""),
+       recDone ? "✓" : (st === "RETRYING" ? "↻" : (retried ? "·" : "–")));
+
+  // imagery from the latest attempt that has artifacts
+  const att = recDone ? 2 : 1;
+  if (segDone || recDone) {
+    $("img-mask").src = `/api/runs/${runId}/artifact/mask?attempt=${att}&t=${Date.now()}`;
+    $("img-overlay").src = `/api/runs/${runId}/artifact/overlay?attempt=${att}&t=${Date.now()}`;
+    $("cap-mask").textContent = `Segmentation (attempt ${att})`;
+    $("cap-overlay").textContent = `Overlay (attempt ${att})`;
+  }
+
+  // evidence table — verbatim persisted values (server-provided display strings)
+  const rows = EV_ROWS.map(([key, label, kind]) => {
+    return `<tr><th>${label}</th><td class="num">${dv(a1[kind], key)}</td><td class="num">${dv(a2[kind], key)}</td></tr>`;
+  }).join("");
+  $("ev-body").innerHTML = rows;
+  const seg = (a2.segmentation || a1.segmentation);
+  if (seg && seg.model_version) {
+    $("model-id").textContent =
+      `model: ${seg.model_version} · checkpoint sha256 ${seg.checkpoint_sha256 || "?"} · adapter ${seg.adapter}`;
+  }
+  if (segDone) $("evidence-card").classList.remove("hidden");
+
+  // final decision
+  if (st === "COMPLETE" || st === "HUMAN_REVIEW") {
+    clearInterval(timer); timer = null;
+    $("go").disabled = false;
+    const dec = run.decision || (a2.decision || a1.decision) || {};
+    mark("final", st === "COMPLETE" ? "done" : "flag", st === "COMPLETE" ? "✓" : "!");
+    const el = $("action");
+    el.textContent = dec.action || st;
+    el.className = dec.action || st;
+    $("action-reason").textContent = dec.reason ? `reason: ${dec.reason}` : "";
+    $("report-link").href = `/api/runs/${runId}/artifact/report`;
+    $("action-card").classList.remove("hidden");
+  }
+}
+</script>
+</body>
+</html>

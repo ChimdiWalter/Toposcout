@@ -1,0 +1,47 @@
+{
+  "pilot": true,
+  "pilot_label": "PATHOLOGY PORTABILITY PILOT \u2014 NOT FOR CLINICAL USE",
+  "domain": "pathology",
+  "adapter": "pathology_hovernet_v1",
+  "model": "TIAToolbox HoVer-Net (hovernet_fast-pannuke)",
+  "model_source": "https://github.com/TissueImageAnalytics/tiatoolbox",
+  "license": "TIAToolbox code permissive; PanNuke HoVer-Net weights CC BY-NC-SA (noncommercial \u2014 flagged); input: TIAToolbox sample tissue tile",
+  "input": "artifacts/pilots/pathology/input.png",
+  "mask": "artifacts/pilots/pathology/mask.png",
+  "overlay": "artifacts/pilots/pathology/overlay.jpg",
+  "runtime_seconds": 37.6,
+  "structural_audit": {
+    "profile": "pathology_nuclei",
+    "structure": "many_instances",
+    "beta_0": 8,
+    "foreground_pixels": 10176,
+    "foreground_fraction": 0.1552734375,
+    "tiny_component_cutoff_px": 32,
+    "tiny_components": 0,
+    "tiny_component_fraction": 0.0,
+    "largest_component_fraction": 0.3180031446540881,
+    "component_area_quartiles_px": [
+      730,
+      983,
+      1337
+    ],
+    "beta_1": 0,
+    "fragmentation_score": 0.0
+  },
+  "profile_primary_metrics": {
+    "beta_0": 8,
+    "tiny_components": 0,
+    "tiny_component_fraction": 0.0,
+    "component_area_quartiles_px": [
+      730,
+      983,
+      1337
+    ],
+    "largest_component_fraction": 0.3180031446540881
+  },
+  "decision": null,
+  "limitations": "Portability pilot only \u2014 NOT for clinical use, no diagnostic claims; instances flattened to a binary mask; no recovery rule.",
+  "generated_at": "2026-08-30T17:28:53-0500",
+  "public_imagery": false,
+  "imagery_note": "HoVer-Net PanNuke weights are CC BY-NC-SA \u2014 derived imagery omitted from public redistribution; numeric evidence retained."
+}

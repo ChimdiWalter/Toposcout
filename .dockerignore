@@ -1,0 +1,24 @@
+build/
+demo_outputs/
+outputs/
+logs/
+.git/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+tests/
+docs/
+.env
+.env.*
+# NC-licensed third-party derived imagery: never ships in public containers
+artifacts/pilots/microscopy/input*
+artifacts/pilots/microscopy/mask.png
+artifacts/pilots/microscopy/overlay.jpg
+artifacts/pilots/pathology/input*
+artifacts/pilots/pathology/mask.png
+artifacts/pilots/pathology/overlay.jpg
+artifacts/pilots/industrial/input*
+artifacts/pilots/industrial/mask.png
+artifacts/pilots/industrial/overlay.jpg
+artifacts/pilots/industrial/anomaly_map.npy

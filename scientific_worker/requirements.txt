@@ -1,0 +1,13 @@
+# Scientific worker runtime — pinned to the versions the equivalence gates
+# ran under (~/.venvs/lesegenv, torch CPU build for the container).
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.11.0+cpu
+timm==1.0.27
+numpy==2.4.3
+scipy==1.16.3
+opencv-python-headless==4.13.0.92
+pillow==12.1.1
+fastapi==0.136.1
+uvicorn==0.46.0
+pydantic==2.13.0
+google-cloud-storage==3.13.1

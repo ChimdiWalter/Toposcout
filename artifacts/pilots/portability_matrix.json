@@ -1,0 +1,88 @@
+{
+  "satellite_road": {
+    "pilot_name": "satellite_road",
+    "status": "ok",
+    "domain": "satellite",
+    "model": "aerial-image-road-segmentation-with-U-NET-xp (Keras U-Net, Massachusetts Roads)",
+    "license": "MIT (model); input tile: Massachusetts Roads test set (Mnih 2013)",
+    "runtime_seconds": 24.52,
+    "primary_metrics": {
+      "beta_0": 26,
+      "fragmentation_score": 1.0,
+      "largest_component_fraction": 0.20949477351916376,
+      "skeleton_components": 24,
+      "skeleton_endpoints": 46,
+      "beta_1": 0
+    }
+  },
+  "materials_crack": {
+    "pilot_name": "materials_crack",
+    "status": "ok",
+    "domain": "materials",
+    "model": "CrackenPy model1 (segmentation-models-pytorch, crack class)",
+    "license": "BSD v2 (CrackenPy model + dataset, research/education use)",
+    "runtime_seconds": 80.38,
+    "primary_metrics": {
+      "beta_0": 335,
+      "skeleton_components": 334,
+      "skeleton_endpoints": 573,
+      "tiny_components": 335,
+      "largest_component_fraction": 0.041271214472914174,
+      "fragmentation_score": 1.0
+    }
+  },
+  "microscopy_cellpose": {
+    "pilot_name": "microscopy_cellpose",
+    "status": "ok",
+    "domain": "microscopy",
+    "model": "Cellpose 4 (Cellpose-SAM generalist, default weights)",
+    "license": "code BSD-3; model weights trained on CC-BY-NC data (per Cellpose docs) \u2014 noncommercial terms flagged; input: cellpose.org sample image",
+    "runtime_seconds": 143.24,
+    "primary_metrics": {
+      "beta_0": 40,
+      "tiny_components": 2,
+      "tiny_component_fraction": 0.05,
+      "component_area_quartiles_px": [
+        638,
+        1125,
+        2033
+      ],
+      "largest_component_fraction": 0.12636173847029797
+    }
+  },
+  "pathology_hovernet": {
+    "pilot_name": "pathology_hovernet",
+    "status": "ok",
+    "domain": "pathology",
+    "model": "TIAToolbox HoVer-Net (hovernet_fast-pannuke)",
+    "license": "TIAToolbox code permissive; PanNuke HoVer-Net weights CC BY-NC-SA (noncommercial \u2014 flagged); input: TIAToolbox sample tissue tile",
+    "runtime_seconds": 37.6,
+    "primary_metrics": {
+      "beta_0": 8,
+      "tiny_components": 0,
+      "tiny_component_fraction": 0.0,
+      "component_area_quartiles_px": [
+        730,
+        983,
+        1337
+      ],
+      "largest_component_fraction": 0.3180031446540881
+    }
+  },
+  "industrial_patchcore": {
+    "pilot_name": "industrial_patchcore",
+    "status": "ok",
+    "domain": "industrial",
+    "model": "Anomalib PatchCore (default config) on MVTec AD 'bottle'",
+    "license": "anomalib Apache-2.0; MVTec AD dataset CC BY-NC-SA 4.0 (noncommercial \u2014 flagged)",
+    "runtime_seconds": 1647.97,
+    "primary_metrics": {
+      "beta_0": 1,
+      "tiny_components": 0,
+      "tiny_component_fraction": 0.0,
+      "largest_component_fraction": 1.0,
+      "foreground_fraction": 0.16911851851851853,
+      "fragmentation_score": 0.0
+    }
+  }
+}

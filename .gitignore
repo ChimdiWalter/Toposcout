@@ -1,0 +1,54 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+demo_outputs/*
+!demo_outputs/.gitkeep
+.DS_Store
+
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# ADK and Agents CLI runtime state
+.google-agents-cli/
+app/.adk/
+*.db
+*.log
+
+# Regenerable runtime artifacts
+outputs/
+output/
+
+# Python environments and caches
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# ADK and Agents CLI runtime state
+.google-agents-cli/
+app/.adk/
+*.db
+*.log
+
+# Regenerable runtime artifacts
+outputs/
+output/
+build/
+logs/

@@ -1,0 +1,263 @@
+TOPOSCOUT LIVE DEPLOYED AGENT TRACE (sanitized)
+service:  toposcout-agent (Cloud Run, us-central1)
+revision: toposcout-agent-00003-4j6
+model:    gemini-3.5-flash
+session:  b60d02d5-95e7-41c5-a36e-62a8ca0f2e05  app=app
+sanitization: removed auth tokens, API keys, model thought signatures,
+and container filesystem paths; tool order, arguments, deterministic
+evidence, policy decisions, report URI, and timestamps are verbatim.
+==============================================================================
+
+[2026-08-30T20:47:15+00:00] user says:
+    Process this scientific imaging run. run_id: live-20260830-154645-DSC_0100_segment_1_segme image_uri: gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/input/DSC_0100_segment_1_segmented_smoothed.png
+
+[2026-08-30T20:47:15+00:00] toposcout_agent -> TOOL CALL inspect_image
+    {
+      "image_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/input/DSC_0100_segment_1_segmented_smoothed.png",
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme"
+    }
+[2026-08-30T20:47:19+00:00] TOOL RESULT inspect_image
+    {
+      "contrast_std": 48.51839828491211,
+      "exists": true,
+      "format": "PNG",
+      "height": 1161,
+      "image_path": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/input/DSC_0100_segment_1_segmented_smoothed.png",
+      "image_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/input/DSC_0100_segment_1_segmented_smoothed.png",
+      "issues": [],
+      "mean_intensity": 111.57122802734375,
+      "mode": "RGB",
+      "qc_pass": true,
+      "sharpness_score": 33.355594635009766,
+      "status": "ok",
+      "width": 3900
+    }
+
+[2026-08-30T20:47:19+00:00] toposcout_agent -> TOOL CALL run_scientific_segmentation
+    {
+      "attempt": 1,
+      "image_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/input/DSC_0100_segment_1_segmented_smoothed.png",
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme"
+    }
+[2026-08-30T20:49:03+00:00] TOOL RESULT run_scientific_segmentation
+    {
+      "adapter": "real_lesion_model_v1",
+      "attempt": 1,
+      "checkpoint_sha256": "8542675d6ce66de8bb3c0ebe0451b638d2724bb74d5d017d24e4217049ef7cd6",
+      "foreground_fraction": 0.18053711433556394,
+      "image_height": 1161,
+      "image_width": 3900,
+      "mask_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt1/mask.png",
+      "min_area_px": 0,
+      "model_version": "critical_set_ph/p5_t0_tile_base (T0 tile baseline, dice_bce, seed 1337)",
+      "n_components_significant": 241,
+      "overlay_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt1/overlay.jpg",
+      "prob_reused": false,
+      "prob_threshold": 0.5,
+      "prob_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt1/prob.npy",
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme",
+      "runtime_seconds": 99.99,
+      "status": "ok"
+    }
+
+[2026-08-30T20:49:03+00:00] toposcout_agent -> TOOL CALL audit_topology
+    {
+      "attempt": 1,
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme"
+    }
+[2026-08-30T20:49:20+00:00] TOOL RESULT audit_topology
+    {
+      "beta_0": 707,
+      "beta_1": 58,
+      "foreground_pixels": 817454,
+      "fragmentation_score": 0.8868458274398868,
+      "largest_component_fraction": 0.043499695395704224,
+      "status": "ok",
+      "tiny_components": 627
+    }
+
+[2026-08-30T20:49:20+00:00] toposcout_agent -> TOOL CALL bounded_policy
+    {
+      "attempt": 1,
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme"
+    }
+[2026-08-30T20:49:21+00:00] TOOL RESULT bounded_policy
+    {
+      "action": "RETRY",
+      "reason": "structural_or_coverage_anomaly"
+    }
+
+[2026-08-30T20:49:21+00:00] toposcout_agent -> TOOL CALL run_scientific_segmentation
+    {
+      "attempt": 2,
+      "image_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/input/DSC_0100_segment_1_segmented_smoothed.png",
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme"
+    }
+[2026-08-30T20:49:25+00:00] TOOL RESULT run_scientific_segmentation
+    {
+      "adapter": "real_lesion_model_v1",
+      "attempt": 2,
+      "checkpoint_sha256": "8542675d6ce66de8bb3c0ebe0451b638d2724bb74d5d017d24e4217049ef7cd6",
+      "foreground_fraction": 0.16506945824775282,
+      "image_height": 1161,
+      "image_width": 3900,
+      "mask_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt2/mask.png",
+      "min_area_px": 500,
+      "model_version": "critical_set_ph/p5_t0_tile_base (T0 tile baseline, dice_bce, seed 1337)",
+      "n_components_significant": 241,
+      "overlay_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt2/overlay.jpg",
+      "prob_reused": true,
+      "prob_threshold": 0.5,
+      "prob_uri": null,
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme",
+      "runtime_seconds": 0.69,
+      "status": "ok"
+    }
+
+[2026-08-30T20:49:25+00:00] toposcout_agent -> TOOL CALL audit_topology
+    {
+      "attempt": 2,
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme"
+    }
+[2026-08-30T20:49:42+00:00] TOOL RESULT audit_topology
+    {
+      "beta_0": 241,
+      "beta_1": 58,
+      "foreground_pixels": 747418,
+      "fragmentation_score": 0.6680497925311203,
+      "largest_component_fraction": 0.047575787578035315,
+      "status": "ok",
+      "tiny_components": 161
+    }
+
+[2026-08-30T20:49:42+00:00] toposcout_agent -> TOOL CALL bounded_policy
+    {
+      "attempt": 2,
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme"
+    }
+[2026-08-30T20:49:43+00:00] TOOL RESULT bounded_policy
+    {
+      "action": "HUMAN_REVIEW",
+      "reason": "anomaly_persisted_after_retry"
+    }
+
+[2026-08-30T20:49:43+00:00] toposcout_agent -> TOOL CALL create_report
+    {
+      "run_id": "live-20260830-154645-DSC_0100_segment_1_segme"
+    }
+[2026-08-30T20:49:45+00:00] TOOL RESULT create_report
+    {
+      "report": {
+        "display_summary": "TopoScout report for sample \"DSC_0100\"\nFinal action: HUMAN_REVIEW (reason: anomaly_persisted_after_retry)\nQC: pass=true, size=3900x1161, mode=RGB, mean_intensity=111.57122802734375, contrast_std=48.51839828491211, sharpness_score=33.355594635009766, issues=[]\nAttempt 1 segmentation: adapter=real_lesion_model_v1, threshold=0.5, foreground_fraction=0.18053711433556394, min_area_px=0, n_components_significant=241, model=critical_set_ph/p5_t0_tile_base (T0 tile baseline, dice_bce, seed 1337), mask_path=None\nAttempt 1 topology: beta_0=707, beta_1=58, foreground_pixels=817454, tiny_components=627, fragmentation_score=0.8868458274398868, largest_component_fraction=0.043499695395704224\nAttempt 1 policy: RETRY (reason: structural_or_coverage_anomaly)\nAttempt 2 segmentation: adapter=real_lesion_model_v1, threshold=0.5, foreground_fraction=0.16506945824775282, min_area_px=500, n_components_significant=241, model=critical_set_ph/p5_t0_tile_base (T0 tile baseline, dice_bce, seed 1337), mask_path=None\nAttempt 2 topology: beta_0=241, beta_1=58, foreground_pixels=747418, tiny_components=161, fragmentation_score=0.6680497925311203, largest_component_fraction=0.047575787578035315\nAttempt 2 policy: HUMAN_REVIEW (reason: anomaly_persisted_after_retry)",
+        "final_decision": {
+          "action": "HUMAN_REVIEW",
+          "reason": "anomaly_persisted_after_retry"
+        },
+        "qc": {
+          "contrast_std": 48.51839828491211,
+          "exists": true,
+          "format": "PNG",
+          "height": 1161,
+          "image_path": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/input/DSC_0100_segment_1_segmented_smoothed.png",
+          "image_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/input/DSC_0100_segment_1_segmented_smoothed.png",
+          "issues": [],
+          "mean_intensity": 111.57122802734375,
+          "mode": "RGB",
+          "qc_pass": true,
+          "sharpness_score": 33.355594635009766,
+          "status": "ok",
+          "width": 3900
+        },
+        "runs": [
+          {
+            "attempt": 1,
+            "decision": {
+              "action": "RETRY",
+              "reason": "structural_or_coverage_anomaly"
+            },
+            "segmentation": {
+              "adapter": "real_lesion_model_v1",
+              "attempt": 1,
+              "checkpoint_sha256": "8542675d6ce66de8bb3c0ebe0451b638d2724bb74d5d017d24e4217049ef7cd6",
+              "foreground_fraction": 0.18053711433556394,
+              "image_height": 1161,
+              "image_width": 3900,
+              "mask_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt1/mask.png",
+              "min_area_px": 0,
+              "model_version": "critical_set_ph/p5_t0_tile_base (T0 tile baseline, dice_bce, seed 1337)",
+              "n_components_significant": 241,
+              "overlay_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt1/overlay.jpg",
+              "prob_reused": false,
+              "prob_threshold": 0.5,
+              "prob_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt1/prob.npy",
+              "run_id": "live-20260830-154645-DSC_0100_segment_1_segme",
+              "runtime_seconds": 99.99,
+              "status": "ok"
+            },
+            "topology": {
+              "beta_0": 707,
+              "beta_1": 58,
+              "foreground_pixels": 817454,
+              "fragmentation_score": 0.8868458274398868,
+              "largest_component_fraction": 0.043499695395704224,
+              "status": "ok",
+              "tiny_components": 627
+            }
+          },
+          {
+            "attempt": 2,
+            "decision": {
+              "action": "HUMAN_REVIEW",
+              "reason": "anomaly_persisted_after_retry"
+            },
+            "segmentation": {
+              "adapter": "real_lesion_model_v1",
+              "attempt": 2,
+              "checkpoint_sha256": "8542675d6ce66de8bb3c0ebe0451b638d2724bb74d5d017d24e4217049ef7cd6",
+              "foreground_fraction": 0.16506945824775282,
+              "image_height": 1161,
+              "image_width": 3900,
+              "mask_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt2/mask.png",
+              "min_area_px": 500,
+              "model_version": "critical_set_ph/p5_t0_tile_base (T0 tile baseline, dice_bce, seed 1337)",
+              "n_components_significant": 241,
+              "overlay_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/attempt2/overlay.jpg",
+              "prob_reused": true,
+              "prob_threshold": 0.5,
+              "prob_uri": null,
+              "run_id": "live-20260830-154645-DSC_0100_segment_1_segme",
+              "runtime_seconds": 0.69,
+              "status": "ok"
+            },
+            "topology": {
+              "beta_0": 241,
+              "beta_1": 58,
+              "foreground_pixels": 747418,
+              "fragmentation_score": 0.6680497925311203,
+              "largest_component_fraction": 0.047575787578035315,
+              "status": "ok",
+              "tiny_components": 161
+            }
+          }
+        ],
+        "sample_id": "DSC_0100",
+        "scientific_guardrail": "Measurements are deterministic tool outputs; the language model must not invent values.",
+        "workflow": "TopoScout MVP v0.1"
+      },
+      "report_path": "<container-local>/DSC_0100.report.json",
+      "report_uri": "gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/report/report.json",
+      "status": "ok"
+    }
+
+[2026-08-30T20:49:45+00:00] toposcout_agent says:
+    TopoScout report for sample "DSC_0100"
+    Final action: HUMAN_REVIEW (reason: anomaly_persisted_after_retry)
+    QC: pass=true, size=3900x1161, mode=RGB, mean_intensity=111.57122802734375, contrast_std=48.51839828491211, sharpness_score=33.355594635009766, issues=[]
+    Attempt 1 segmentation: adapter=real_lesion_model_v1, threshold=0.5, foreground_fraction=0.18053711433556394, min_area_px=0, n_components_significant=241, model=critical_set_ph/p5_t0_tile_base (T0 tile baseline, dice_bce, seed 1337), mask_path=None
+    Attempt 1 topology: beta_0=707, beta_1=58, foreground_pixels=817454, tiny_components=627, fragmentation_score=0.8868458274398868, largest_component_fraction=0.043499695395704224
+    Attempt 1 policy: RETRY (reason: structural_or_coverage_anomaly)
+    Attempt 2 segmentation: adapter=real_lesion_model_v1, threshold=0.5, foreground_fraction=0.16506945824775282, min_area_px=500, n_components_significant=241, model=critical_set_ph/p5_t0_tile_base (T0 tile baseline, dice_bce, seed 1337), mask_path=None
+    Attempt 2 topology: beta_0=241, beta_1=58, foreground_pixels=747418, tiny_components=161, fragmentation_score=0.6680497925311203, largest_component_fraction=0.047575787578035315
+    Attempt 2 policy: HUMAN_REVIEW (reason: anomaly_persisted_after_retry)
+    
+    A second segmentation attempt was triggered to recover from a topological anomaly, which persisted and prompted escalating the run to human review. The compiled JSON run report is located in the storage bucket at `gs://toposcout-agent-runs/runs/live-20260830-154645-DSC_0100_segment_1_segme/report/report.json`.

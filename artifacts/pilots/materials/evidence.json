@@ -1,0 +1,47 @@
+{
+  "pilot": true,
+  "pilot_label": "MATERIALS PORTABILITY PILOT \u2014 NOT A SAFETY CERTIFICATION",
+  "domain": "materials",
+  "adapter": "materials_crackenpy_v1",
+  "model": "CrackenPy model1 (segmentation-models-pytorch, crack class)",
+  "model_source": "https://huggingface.co/rievil/crackenpy",
+  "license": "BSD v2 (CrackenPy model + dataset, research/education use)",
+  "input": "artifacts/pilots/materials/input.png",
+  "mask": "artifacts/pilots/materials/mask.png",
+  "overlay": "artifacts/pilots/materials/overlay.jpg",
+  "runtime_seconds": 80.38,
+  "structural_audit": {
+    "profile": "materials_crack",
+    "structure": "connected_thin_network",
+    "beta_0": 335,
+    "foreground_pixels": 39301,
+    "foreground_fraction": 0.005259305254086229,
+    "tiny_component_cutoff_px": 3736,
+    "tiny_components": 335,
+    "tiny_component_fraction": 1.0,
+    "largest_component_fraction": 0.041271214472914174,
+    "component_area_quartiles_px": [
+      23,
+      66,
+      147
+    ],
+    "beta_1": 1,
+    "skeleton_components": 334,
+    "skeleton_endpoints": 573,
+    "skeleton_pixels": 1616,
+    "fragmentation_score": 1.0
+  },
+  "profile_primary_metrics": {
+    "beta_0": 335,
+    "skeleton_components": 334,
+    "skeleton_endpoints": 573,
+    "tiny_components": 335,
+    "largest_component_fraction": 0.041271214472914174,
+    "fragmentation_score": 1.0
+  },
+  "decision": null,
+  "limitations": "Portability pilot only \u2014 structural-integrity visualization, not a safety certification; fixed public checkpoint; crack class only; no recovery rule.",
+  "generated_at": "2026-08-30T16:17:54-0500",
+  "public_imagery": true,
+  "imagery_note": "CrackenPy model + example imagery BSD-licensed (research/education)."
+}

@@ -1,0 +1,44 @@
+{
+  "pilot": true,
+  "pilot_label": "INDUSTRIAL PORTABILITY PILOT \u2014 NO ACCEPTANCE CLAIMS",
+  "domain": "industrial",
+  "adapter": "industrial_patchcore_v1",
+  "model": "Anomalib PatchCore (default config) on MVTec AD 'bottle'",
+  "model_source": "https://github.com/open-edge-platform/anomalib",
+  "license": "anomalib Apache-2.0; MVTec AD dataset CC BY-NC-SA 4.0 (noncommercial \u2014 flagged)",
+  "input": "artifacts/pilots/industrial/input.png",
+  "mask": "artifacts/pilots/industrial/mask.png",
+  "overlay": "artifacts/pilots/industrial/overlay.jpg",
+  "runtime_seconds": 1647.97,
+  "structural_audit": {
+    "profile": "industrial_defect",
+    "structure": "sparse_anomaly_regions",
+    "beta_0": 1,
+    "foreground_pixels": 136986,
+    "foreground_fraction": 0.16911851851851853,
+    "tiny_component_cutoff_px": 405,
+    "tiny_components": 0,
+    "tiny_component_fraction": 0.0,
+    "largest_component_fraction": 1.0,
+    "component_area_quartiles_px": [
+      136986,
+      136986,
+      136986
+    ],
+    "beta_1": 0,
+    "fragmentation_score": 0.0
+  },
+  "profile_primary_metrics": {
+    "beta_0": 1,
+    "tiny_components": 0,
+    "tiny_component_fraction": 0.0,
+    "largest_component_fraction": 1.0,
+    "foreground_fraction": 0.16911851851851853,
+    "fragmentation_score": 0.0
+  },
+  "decision": null,
+  "limitations": "Portability pilot only \u2014 no manufacturing acceptance claims; memory bank fitted on the category's normal images at run time; binary mask uses anomalib's computed threshold; no recovery rule.",
+  "generated_at": "2026-08-30T17:59:01-0500",
+  "public_imagery": false,
+  "imagery_note": "MVTec AD is CC BY-NC-SA 4.0 (noncommercial) \u2014 dataset imagery omitted from public redistribution; numeric evidence retained."
+}

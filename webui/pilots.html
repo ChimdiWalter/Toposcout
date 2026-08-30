@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TopoScout — Cross-Domain Portability</title>
+<style>
+  :root { --ink:#1a2733; --mut:#5d6f7f; --line:#dce3e9; --ok:#1c7c46; --warn:#b3610e;
+          --accent:#0b5fa5; --bg:#f4f6f8; --card:#ffffff; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:15px/1.45 "Segoe UI", system-ui, sans-serif; }
+  header { background:var(--card); border-bottom:1px solid var(--line); padding:14px 22px;
+           display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  header h1 { margin:0; font-size:20px; } header a { color:var(--accent); }
+  main { max-width:1100px; margin:20px auto; padding:0 16px; display:grid; gap:16px; }
+  .banner { border:1px solid var(--line); border-left:5px solid var(--ok); background:var(--card);
+            border-radius:8px; padding:12px 16px; }
+  .banner b { color:var(--ok); }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px 16px; }
+  .card h2 { margin:0 0 2px; font-size:16px; text-transform:capitalize; }
+  .pill { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.5px;
+          color:var(--warn); border:1px solid var(--warn); border-radius:10px; padding:1px 8px; margin-bottom:8px; }
+  .imgs { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:8px 0; }
+  .imgs img { width:100%; border:1px solid var(--line); border-radius:4px; background:#eee; }
+  .imgs figcaption { font-size:11px; color:var(--mut); text-align:center; }
+  figure { margin:0; }
+  table { border-collapse:collapse; width:100%; font-size:13px; margin-top:6px; }
+  td, th { padding:2px 8px 2px 0; border-bottom:1px solid var(--line); text-align:left; }
+  td.num { font-family:Consolas, monospace; }
+  .meta { font-size:12px; color:var(--mut); margin-top:8px; }
+  .resp { font-weight:700; margin-top:8px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>TopoScout — Cross-Domain Portability</h1>
+  <a href="/">← validated maize workflow</a>
+</header>
+<main>
+  <section class="banner">
+    <b>VALIDATED REFERENCE APPLICATION: maize phenotyping</b> — the live workflow on the
+    <a href="/">main page</a> runs the validated maize lesion model end to end.
+    The cards below are <b>portability pilots</b>: five independent public models wrapped
+    behind the same TopoScout evidence contract and audited by the same structural layer.
+    They are <b>not</b> domain-validated scientific or clinical applications.
+  </section>
+  <section class="cards" id="cards"></section>
+</main>
+<script>
+"use strict";
+const METRIC_LABELS = {
+  beta_0: "β₀ (components)", beta_1: "β₁ (holes)",
+  fragmentation_score: "fragmentation", largest_component_fraction: "largest fraction",
+  skeleton_components: "skeleton components", skeleton_endpoints: "skeleton endpoints",
+  tiny_components: "tiny components", tiny_component_fraction: "tiny fraction",
+  component_area_quartiles_px: "area quartiles (px)", foreground_fraction: "foreground fraction",
+};
+fetch("/api/pilots").then(r => r.json()).then(data => {
+  const cards = document.getElementById("cards");
+  for (const [domain, ev] of Object.entries(data)) {
+    const rows = Object.entries(ev.profile_primary_metrics || {}).map(([k, v]) =>
+      `<tr><th>${METRIC_LABELS[k] || k}</th><td class="num">${JSON.stringify(v)}</td></tr>`).join("");
+    const imagery = ev.public_imagery
+      ? `<div class="imgs">
+           <figure><img src="/pilots/assets/${domain}/input" alt="input"><figcaption>Input</figcaption></figure>
+           <figure><img src="/pilots/assets/${domain}/overlay" alt="overlay"><figcaption>Prediction overlay</figcaption></figure>
+         </div>`
+      : `<div class="imgs" style="grid-template-columns:1fr">
+           <div style="border:1px dashed var(--line);border-radius:4px;padding:14px;font-size:12.5px;color:var(--mut)">
+             <b>Dataset imagery omitted from public redistribution.</b><br>${ev.imagery_note || ""}
+           </div>
+         </div>`;
+    const el = document.createElement("article");
+    el.className = "card";
+    el.innerHTML = `
+      <h2>${domain}</h2>
+      <span class="pill">${ev.pilot_label}</span>
+      ${imagery}
+      <table>${rows}</table>
+      <div class="resp">TopoScout: descriptive structural audit — suspicious structure → HUMAN_REVIEW</div>
+      <div class="meta">Model: ${ev.model}<br>License: ${ev.license}<br>Runtime: ${ev.runtime_seconds}s</div>`;
+    cards.appendChild(el);
+  }
+});
+</script>
+</body>
+</html>
