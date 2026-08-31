@@ -2,6 +2,12 @@
 
 > **"AI models make predictions. TopoScout checks whether those predictions should be trusted."**
 
+<p align="center">
+  <img src="docs/images/toposcout_hero.png"
+       alt="TopoScout autonomous structural verification workflow"
+       width="900">
+</p>
+
 TopoScout is an autonomous quality-control agent for scientific imaging AI,
 built for **Google's All Things Agentic Hackathon** (category: Taskmaster).
 It runs an approved model, audits the *topology* of the prediction (connected
@@ -12,12 +18,10 @@ trail. Gemini coordinates the workflow; deterministic tools own every number.
 **Live app:** https://toposcout-ui-563759553540.us-central1.run.app
 **Cross-domain pilots:** https://toposcout-ui-563759553540.us-central1.run.app/pilots
 
-![Architecture](docs/architecture.png)
-
 ## Problem
 
 A segmentation model can return a confident-looking mask that is structurally
-wrong — one lesion shattered into 65 pieces, a road network split into 26
+wrong: one lesion shattered into 65 pieces, a road network split into 26
 disconnected fragments. Overlap metrics (Dice/IoU) and per-pixel confidence do
 not expose this. Scientists either trust bad masks or review everything by hand.
 
@@ -31,7 +35,7 @@ image → approved model → topological audit → bounded policy
                         RETRY (one validated recovery) → re-audit
 ```
 
-Topology is not a dashboard metric here — **it is the control signal that
+Topology is not a dashboard metric here; **it is the control signal that
 changes what the agent does next.**
 
 ## Live validated results (maize reference application)
@@ -42,7 +46,7 @@ changes what the agent does next.**
 | DSC_0100 | β₀ = 707, fragmentation 0.887 | RETRY | β₀ = 241, fragmentation 0.668 | **HUMAN_REVIEW** |
 
 Both sequences were executed autonomously by the **deployed Gemini agent**
-choosing tools itself — unedited, sanitized traces:
+choosing tools itself; unedited, sanitized traces:
 [`artifacts/traces/`](artifacts/traces/).
 
 ## Agentic workflow
@@ -51,7 +55,7 @@ Gemini 3.5 Flash (Google ADK) observes each tool result and chooses the next
 approved action: `inspect_image → run_scientific_segmentation → audit_topology
 → bounded_policy → (retry branch) → create_report`. The LLM can decide only
 **when** to call approved tools. It can never choose models, checkpoints,
-thresholds, buckets, paths, or executables — those are trusted server-side
+thresholds, buckets, paths, or executables; those are trusted server-side
 configuration, and `bounded_policy` (plain Python) is the sole decision
 authority. Every tool output is persisted verbatim in Firestore; reports are
 rebuilt from stored evidence, never from the conversation, so the LLM cannot
@@ -59,38 +63,72 @@ round, invent, or "improve" a number.
 
 ## Architecture (Google technologies)
 
-- **Gemini 3.5 Flash + Google ADK** — agent orchestration (private Cloud Run).
-- **Cloud Run** — three services: public UI, private agent, private scientific
+![Architecture](docs/architecture.png)
+
+- **Gemini 3.5 Flash + Google ADK**: agent orchestration (private Cloud Run).
+- **Cloud Run**: three services: public UI, private agent, private scientific
   worker (2 CPU / 4 Gi, scale-to-zero, concurrency 1).
-- **Cloud Tasks** — reliable async processing: upload returns HTTP 202, a task
+- **Cloud Tasks**: reliable async processing: upload returns HTTP 202, a task
   carrying only `{run_id, image_uri}` invokes the OIDC-verified
   `/internal/process` endpoint (no daemon threads, request-based billing safe).
-- **Cloud Storage** — canonical run artifacts `runs/<run_id>/{input,attempt1,attempt2,report}`.
-- **Firestore** — run state machine + verbatim tool evidence.
-- **Secret Manager** — Gemini API key (agent service only; the worker never sees it).
+- **Cloud Storage**: canonical run artifacts `runs/<run_id>/{input,attempt1,attempt2,report}`.
+- **Firestore**: run state machine + verbatim tool evidence.
+- **Secret Manager**: Gemini API key (agent service only; the worker never sees it).
 
 ## Cross-domain portability pilots
 
 To test whether the architecture is maize-specific, five independent public
 models were wrapped behind the same adapter contract and audited by the same
-structural layer — see [`docs/CROSS_DOMAIN_PILOTS.md`](docs/CROSS_DOMAIN_PILOTS.md):
+structural layer; see [`docs/CROSS_DOMAIN_PILOTS.md`](docs/CROSS_DOMAIN_PILOTS.md):
 
 | Domain | Model | Structural finding |
 |---|---|---|
 | Satellite | MIT road U-Net | road network in **26 disconnected pieces** → suspicious |
 | Microscopy | Cellpose 4 | 40 cell instances, plausible |
-| Pathology | HoVer-Net (PanNuke) | 8 nuclei, plausible — *not clinical* |
+| Pathology | HoVer-Net (PanNuke) | 8 nuclei, plausible, *not clinical* |
 | Materials | CrackenPy | **335 tiny crack fragments** → suspicious |
 | Industrial | Anomalib PatchCore | **β₀ = 1** coherent defect region |
 
 Pilots are **portability demonstrations, not validated applications**; every
 audit is exactly recomputable from the frozen mask (enforced by tests). Some
-third-party imagery is omitted from public redistribution for license reasons —
+third-party imagery is omitted from public redistribution for license reasons;
 see [`docs/THIRD_PARTY_ASSETS.md`](docs/THIRD_PARTY_ASSETS.md).
+
+### Satellite: topology exposes broken connectivity
+
+<p align="center">
+  <img src="docs/images/satellite_road_overlay.jpg"
+       alt="TopoScout satellite road segmentation portability pilot"
+       width="760">
+</p>
+
+> In the satellite portability pilot, a public road-segmentation U-Net
+> produced a network split into **26 disconnected components**.
+> TopoScout measured fragmentation = **1.0**, largest-component fraction =
+> **0.20949477351916376**, and **46 skeleton endpoints**.
+> This demonstrates how connectivity carries structural information that
+> pixel-level overlap alone does not directly represent.
+
+**Portability pilot only: not validated for operational GIS use.**
+
+### Materials: fragmented crack structure
+
+<p align="center">
+  <img src="docs/images/materials_crack_overlay.jpg"
+       alt="TopoScout materials crack segmentation portability pilot"
+       width="760">
+</p>
+
+> In the materials portability pilot, the crack model produced
+> **335 connected components**, with a highly fragmented thin structure.
+> TopoScout exposes that structural failure using the same audit contract
+> used by the other registered adapters.
+
+**Portability pilot only: not a structural-safety certification system.**
 
 ## Try a different domain yourself
 
-The pilots are judge-runnable — the satellite one is turnkey:
+The pilots are judge-runnable; the satellite one is turnkey:
 
 ```bash
 bash scripts/setup_pilot.sh satellite
@@ -99,7 +137,7 @@ bash scripts/setup_pilot.sh satellite
 
 This downloads the MIT road U-Net, runs it on the bundled Massachusetts Roads
 tile, and recomputes the frozen reference structure live (26 disconnected
-road components, fragmentation 1.0, 46 skeleton endpoints — structurally
+road components, fragmentation 1.0, 46 skeleton endpoints: structurally
 suspicious). Materials is equally turnkey; microscopy/pathology/industrial
 accept your own appropriately licensed images (`--input`). Full instructions:
 [`docs/PILOT_QUICKSTART.md`](docs/PILOT_QUICKSTART.md). New runs write only
@@ -156,8 +194,8 @@ the demo adapter, and the hosted app demonstrates the real model.
 ## Tests
 
 96 passed, 1 skipped in the full private tree; this public tree runs 81
-tests (the same suites minus the private-model integration test). All tests are hermetic — no
-Gemini calls, no cloud access, stubbed inference.
+tests (the same suites minus the private-model integration test). All tests are
+hermetic: no Gemini calls, no cloud access, stubbed inference.
 
 ## Pre-existing work vs built during the hackathon
 
