@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render docs/architecture.{svg,png} for the hackathon submission (M7)."""
+"""Render docs/architecture.{svg,png} — simple, GitHub-friendly (M7)."""
 from __future__ import annotations
 
 import matplotlib
@@ -8,132 +8,90 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 
-INK = "#1a2733"
-MUT = "#5d6f7f"
-LINE = "#b9c4cd"
-ACCENT = "#0b5fa5"
-OK = "#1c7c46"
-WARN = "#b3610e"
-BAD = "#a52a2a"
-PUB = "#e8f1f8"
-PRIV = "#fdf3e7"
-DATA = "#eef7ee"
-NEUTRAL = "#f4f6f8"
+INK = "#1f2937"
+MUT = "#6b7280"
+LINE = "#9aa7b1"
+DARK = "#374151"
+OK = "#15803d"
+WARN = "#b45309"
+BAD = "#b91c1c"
 
-fig, ax = plt.subplots(figsize=(13.5, 10.5), dpi=160)
-ax.set_xlim(0, 135)
-ax.set_ylim(0, 105)
+fig, ax = plt.subplots(figsize=(11.5, 10.2), dpi=180)
+ax.set_xlim(0, 115)
+ax.set_ylim(0, 102)
 ax.axis("off")
 
 
-def box(x, y, w, h, title, sub="", fc=NEUTRAL, ec=LINE, title_c=INK, fs=10.5, sfs=8.2):
-    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.6,rounding_size=1.2",
-                                facecolor=fc, edgecolor=ec, linewidth=1.4))
-    cy = y + h / 2 + (2.2 if sub else 0)
-    ax.text(x + w / 2, cy, title, ha="center", va="center", fontsize=fs,
-            color=title_c, fontweight="bold")
+def box(x, y, w, h, title, sub="", ec=LINE, fc="#ffffff", tc=INK, fs=12, sfs=8.6, lw=1.6):
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.5,rounding_size=1.0",
+                                facecolor=fc, edgecolor=ec, linewidth=lw))
     if sub:
-        ax.text(x + w / 2, y + h / 2 - 2.6, sub, ha="center", va="center",
+        ax.text(x + w / 2, y + h / 2 + 1.5, title, ha="center", va="center",
+                fontsize=fs, color=tc, fontweight="bold")
+        ax.text(x + w / 2, y + h / 2 - 1.9, sub, ha="center", va="center",
                 fontsize=sfs, color=MUT)
+    else:
+        ax.text(x + w / 2, y + h / 2, title, ha="center", va="center",
+                fontsize=fs, color=tc, fontweight="bold")
     return (x, y, w, h)
 
 
-def arrow(p1, p2, label="", color=INK, lw=1.6, ls="-", label_dx=1.2):
-    ax.add_patch(FancyArrowPatch(p1, p2, arrowstyle="-|>", mutation_scale=13,
+def a(p1, p2, color=DARK, lw=1.8, ls="-", rad=0.0):
+    ax.add_patch(FancyArrowPatch(p1, p2, arrowstyle="-|>", mutation_scale=14,
                                  color=color, linewidth=lw, linestyle=ls,
-                                 shrinkA=2, shrinkB=2))
-    if label:
-        mx, my = (p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2
-        ax.text(mx + label_dx, my, label, fontsize=7.8, color=MUT, ha="left", va="center")
+                                 connectionstyle=f"arc3,rad={rad}", shrinkA=2.5, shrinkB=2.5))
 
 
-def cx(b):  # bottom-center / top-center helpers
-    return b[0] + b[2] / 2
+def top(b):   return (b[0] + b[2] / 2, b[1] + b[3])
+def bot(b):   return (b[0] + b[2] / 2, b[1])
+def left(b):  return (b[0], b[1] + b[3] / 2)
+def right(b): return (b[0] + b[2], b[1] + b[3] / 2)
 
 
-# ── title ────────────────────────────────────────────────────────────────────
-ax.text(2, 102.5, "TopoScout — autonomous structural verification for scientific imaging AI",
-        fontsize=15, color=INK, fontweight="bold")
-ax.text(2, 99.6, "Gemini coordinates · deterministic tools measure · topology controls the action · bounded policy decides",
-        fontsize=9.5, color=MUT)
+ax.text(57.5, 99.3, "TopoScout", fontsize=19, color=INK, fontweight="bold", ha="center")
+ax.text(57.5, 95.9, "AI models make predictions. TopoScout checks whether they should be trusted.",
+        fontsize=10, color=MUT, ha="center")
 
-# ── main pipeline (left column) ──────────────────────────────────────────────
-user = box(24, 92, 34, 5.5, "USER / SCIENTIST", fc="#ffffff")
-ui = box(24, 82.5, 34, 6.5, "TopoScout Web UI", "Cloud Run · PUBLIC", fc=PUB, ec=ACCENT)
-gcs = box(4, 70.6, 24, 7.6, "Cloud Storage", "input · masks · overlays\nprob maps · reports", fc=DATA, ec=OK)
-fs_ = box(56, 70.6, 24, 7.6, "Firestore", "exact run state +\nverbatim tool evidence", fc=DATA, ec=OK)
-tasks = box(30, 71.5, 22, 6.5, "Cloud Tasks", "{run_id, image_uri}", fc=PUB, ec=ACCENT)
-agent = box(24, 60.5, 34, 7.5, "Gemini 3.5 Flash Agent", "Google ADK · Cloud Run · PRIVATE\nchooses only WHEN to call approved tools", fc=PRIV, ec=WARN)
-qc = box(24, 52.5, 34, 5.2, "Image Quality Control", "deterministic QC on the canonical input", fc=NEUTRAL)
-worker = box(24, 42.5, 34, 7.2, "Scientific Model Worker", "private Cloud Run · DINOv2 T0 segmenter\nfixed checkpoint · frozen thresholds", fc=PRIV, ec=WARN)
-audit = box(24, 32.5, 34, 7.2, "TOPOLOGICAL AUDIT", "β₀ · β₁ · fragmentation · tiny components\nlargest component fraction", fc="#f0ebf7", ec="#6a4fa3")
-policy = box(24, 23.5, 34, 6.2, "BOUNDED POLICY", "sole decision authority", fc=NEUTRAL, ec=INK)
+X, W, H = 20, 42, 7.2
+ui = box(X, 85, W, H, "Web UI", "Cloud Run · public")
+tasks = box(X, 74.8, W, H, "Cloud Tasks", "async, reliable · {run_id, image_uri}")
+agent = box(X, 64.6, W, H, "Gemini Agent", "Google ADK · Cloud Run · private", ec=DARK, lw=1.9)
+model = box(X, 54.4, W, H, "Scientific Model", "Cloud Run · private · fixed checkpoint")
+audit = box(X, 44.2, W, H, "Topology Audit", "β₀ · β₁ · fragmentation", ec=DARK, lw=1.9)
+policy = box(X, 34, W, H, "Bounded Policy", "deterministic decision", ec=DARK, lw=1.9)
 
-accept = box(6, 13, 20, 5.5, "ACCEPT", fc="#e8f5ec", ec=OK, title_c=OK)
-retry = box(31, 13, 20, 5.5, "RETRY (once)", fc="#fdf1e2", ec=WARN, title_c=WARN)
-review = box(56, 13, 22, 5.5, "HUMAN REVIEW", fc="#faeaea", ec=BAD, title_c=BAD)
-recover = box(31, 4, 20, 5.5, "validated recovery", "500 px significance filter", fc=NEUTRAL)
+accept = box(4, 20, 26, 7.2, "ACCEPT", ec=OK, tc=OK, fc="#f2faf4")
+retry = box(36, 20, 26, 7.2, "RETRY once", "validated recovery", ec=WARN, tc=WARN, fc="#fdf7ec")
+review = box(68, 20, 26, 7.2, "HUMAN REVIEW", ec=BAD, tc=BAD, fc="#fcf1f1")
 
-evidence = box(4, 4, 24, 5.5, "evidence report", "Firestore + GCS", fc=DATA, ec=OK)
+store = box(74, 54.4, 36, 17.6, "", "", ec=LINE)
+ax.text(92, 66.5, "Evidence store", ha="center", fontsize=11, color=INK, fontweight="bold")
+ax.text(92, 63.6, "Firestore + Cloud Storage", ha="center", fontsize=9, color=INK)
+ax.text(92, 58.2, "every tool output saved verbatim —\nthe agent can never invent\nor round a measurement",
+        ha="center", fontsize=8.4, color=MUT)
 
-arrow((cx(user), 92), (cx(ui), 89), "upload image")
-arrow((30, 82.5), (16, 78), "original", color=OK)
-arrow((52, 82.5), (66, 78), "run doc", color=OK)
-arrow((cx(ui), 82.5), (cx(tasks), 78), "202 + enqueue")
-arrow((cx(tasks), 71.5), (cx(agent), 68), "OIDC-authenticated")
-arrow((cx(agent), 60.5), (cx(qc), 57.7))
-arrow((cx(qc), 52.5), (cx(worker), 49.7))
-arrow((cx(worker), 42.5), (cx(audit), 39.7), "mask")
-arrow((cx(audit), 32.5), (cx(policy), 29.7))
-arrow((30, 23.5), (16, 18.5), color=OK)
-arrow((cx(policy), 23.5), (41, 18.5), color=WARN)
-arrow((52, 23.5), (67, 18.5), color=BAD)
-arrow((41, 13), (41, 9.5), color=WARN)
-arrow((31, 6.8), (28.6, 34), "re-audit", color=WARN, ls="--", lw=1.3, label_dx=1.0)
-arrow((16, 13), (16, 9.5), color=OK)
-arrow((67, 13), (28, 7.5), color=OK, ls="--", lw=1.2)
+a(bot(ui), top(tasks))
+a(bot(tasks), top(agent))
+a(bot(agent), top(model))
+a(bot(model), top(audit))
+a(bot(audit), top(policy))
+a(left(policy), top(accept), color=OK, rad=0.25)
+a(bot(policy), top(retry), color=WARN)
+a(right(policy), top(review), color=BAD, rad=-0.25)
+a(right(retry), (right(audit)[0] + 3, right(audit)[1] - 2), color=WARN, ls="--", lw=1.6, rad=-0.35)
+ax.text(70.5, 38.5, "re-audit", fontsize=8.6, color=WARN, ha="center")
+a(right(agent), (74, 63), color=MUT, ls=":", lw=1.4, rad=-0.12)
+ax.text(69.5, 69, "evidence", fontsize=8.6, color=MUT, ha="center")
 
-# evidence writes back up to Firestore/GCS
-arrow((10, 9.5), (10, 71.5), color=OK, ls=":", lw=1.1, label_dx=-9)
-ax.text(1.2, 40, "every tool output persisted verbatim", fontsize=7.6, color=OK, rotation=90, va="center")
+ax.text(57.5, 14.9, "upload → model → structural check → act → evidence", fontsize=9,
+        color=MUT, ha="center", style="italic")
 
-# ── adapter panel (right column) ─────────────────────────────────────────────
-panel_x = 86
-ax.add_patch(FancyBboxPatch((panel_x - 2, 2), 49, 92, boxstyle="round,pad=0.8,rounding_size=1.6",
-                            facecolor="#fbfcfd", edgecolor=LINE, linewidth=1.2, linestyle="--"))
-ax.text(panel_x + 22.5, 91.2, "SAME TOPOSCOUT CONTRACT", ha="center", fontsize=11,
+band = box(4, 2.5, 106, 8.6, "", ec=LINE)
+ax.text(57, 8.9, "One contract, many domains", ha="center", fontsize=10.5,
         color=INK, fontweight="bold")
-ax.text(panel_x + 22.5, 88.4, "registered adapters only — the LLM never picks\nmodels, checkpoints, thresholds, or paths",
-        ha="center", fontsize=8, color=MUT)
-
-ref = box(panel_x + 2, 78, 41, 7, "Maize lesion model", "VALIDATED REFERENCE APPLICATION\nRETRY→ACCEPT · RETRY→HUMAN_REVIEW", fc="#e8f5ec", ec=OK)
-pilots = [
-    ("Cellpose — Microscopy", "40 instances · plausible"),
-    ("HoVer-Net — Pathology", "8 nuclei · plausible · NOT clinical"),
-    ("Road U-Net — Satellite", "26 disconnected pieces → suspicious"),
-    ("CrackenPy — Materials", "335 crack fragments → suspicious"),
-    ("PatchCore — Industrial", "β₀ = 1 coherent defect region"),
-]
-y = 68.5
-pboxes = []
-for name, res in pilots:
-    pboxes.append(box(panel_x + 2, y, 41, 6.6, name, res + "\nPORTABILITY PILOT — not domain-validated",
-                      fc="#fdf9f2", ec=WARN, fs=9.3, sfs=7.4))
-    y -= 9.2
-
-paudit = box(panel_x + 7, 14, 31, 6.5, "structural audit", "domain profiles select the metrics", fc="#f0ebf7", ec="#6a4fa3")
-for b in [ref] + pboxes:
-    arrow((panel_x + 1, b[1] + b[3] / 2), (panel_x - 0.5, b[1] + b[3] / 2), color=MUT, lw=1.0)
-    arrow((cx(b), b[1]), (cx(paudit), 20.5), color="#6a4fa3", lw=0.9, ls=":")
-
-ax.text(panel_x - 4.5, 50, "adapter API", fontsize=8, color=MUT, rotation=90, va="center")
-
-# legend
-lx = 86.5
-ax.add_patch(FancyBboxPatch((lx, 3.2), 20, 2.6, boxstyle="round,pad=0.3", facecolor=PUB, edgecolor=ACCENT, lw=1))
-ax.text(lx + 22, 4.5, "public service", fontsize=8, color=MUT, va="center")
-ax.add_patch(FancyBboxPatch((lx + 33.5, 3.2), 8, 2.6, boxstyle="round,pad=0.3", facecolor=PRIV, edgecolor=WARN, lw=1))
-ax.text(lx + 43, 4.5, "private", fontsize=8, color=MUT, va="center")
+ax.text(57, 5.2,
+        "Maize lesion model (VALIDATED)   ·   Cellpose   ·   HoVer-Net   ·   Road U-Net   ·   CrackenPy   ·   PatchCore  (portability pilots)",
+        ha="center", fontsize=8.8, color=MUT)
 
 fig.savefig("docs/architecture.svg", bbox_inches="tight", facecolor="white")
 fig.savefig("docs/architecture.png", bbox_inches="tight", facecolor="white")
