@@ -88,6 +88,24 @@ audit is exactly recomputable from the frozen mask (enforced by tests). Some
 third-party imagery is omitted from public redistribution for license reasons —
 see [`docs/THIRD_PARTY_ASSETS.md`](docs/THIRD_PARTY_ASSETS.md).
 
+## Try a different domain yourself
+
+The pilots are judge-runnable — the satellite one is turnkey:
+
+```bash
+bash scripts/setup_pilot.sh satellite
+.pilot-envs/satellite/bin/python scripts/pilot_demo.py run satellite
+```
+
+This downloads the MIT road U-Net, runs it on the bundled Massachusetts Roads
+tile, and recomputes the frozen reference structure live (26 disconnected
+road components, fragmentation 1.0, 46 skeleton endpoints — structurally
+suspicious). Materials is equally turnkey; microscopy/pathology/industrial
+accept your own appropriately licensed images (`--input`). Full instructions:
+[`docs/PILOT_QUICKSTART.md`](docs/PILOT_QUICKSTART.md). New runs write only
+to `outputs/pilots/`; the frozen submission evidence never changes. Maize is
+the validated reference application; every other domain is a portability pilot.
+
 ## Security / guardrails
 
 - Closed request schemas everywhere (`extra="forbid"`): a request cannot name a
@@ -137,8 +155,8 @@ the demo adapter, and the hosted app demonstrates the real model.
 
 ## Tests
 
-90 passed, 1 skipped in the full private tree; the public tree runs the same
-suites minus the private-model integration test. All tests are hermetic — no
+96 passed, 1 skipped in the full private tree; this public tree runs 81
+tests (the same suites minus the private-model integration test). All tests are hermetic — no
 Gemini calls, no cloud access, stubbed inference.
 
 ## Pre-existing work vs built during the hackathon

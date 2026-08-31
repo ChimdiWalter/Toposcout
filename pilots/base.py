@@ -62,14 +62,21 @@ class PilotAdapter(ABC):
     def _predict_mask(self, image_path: Path, out_dir: Path) -> dict[str, Any]:
         """Run the fixed model; return at least {mask (bool HxW), overlay_bgr}."""
 
-    def predict(self, image_path: str) -> dict[str, Any]:
+    def predict(self, image_path: str, out_dir: str | Path | None = None) -> dict[str, Any]:
+        """Run the fixed model on image_path.
+
+        out_dir is TRUSTED Python-side configuration (the frozen-evidence
+        runner uses artifacts/pilots/<domain>; the judge CLI uses a fresh
+        outputs/pilots/... directory). It is never caller-controlled from any
+        LLM or web surface.
+        """
         import cv2
 
         p = Path(image_path)
         if not p.is_file():
             return {"status": "failed", "reason": "input_not_found", "pilot": True,
                     "domain": self.domain, "adapter": self.adapter_name}
-        out_dir = ARTIFACT_ROOT / self.domain
+        out_dir = Path(out_dir) if out_dir else ARTIFACT_ROOT / self.domain
         out_dir.mkdir(parents=True, exist_ok=True)
 
         t0 = time.time()

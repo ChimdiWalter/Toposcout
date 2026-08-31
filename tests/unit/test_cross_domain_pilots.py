@@ -55,7 +55,9 @@ def test_missing_optional_dependencies_fail_gracefully():
 
 def test_predict_exposes_no_scientific_choices():
     params = inspect.signature(PilotAdapter.predict).parameters
-    assert set(params) == {"self", "image_path"}
+    # out_dir is trusted Python-side plumbing (frozen runner vs judge CLI);
+    # no model/checkpoint/threshold/executable surface exists
+    assert set(params) == {"self", "image_path", "out_dir"}
     for factory in registry._REGISTRY.values():
         assert len(inspect.signature(factory).parameters) == 0
 
